@@ -112,6 +112,66 @@ async function removeProblem(canonicalUrl) {
   }
 }
 
+// --- Icon Update Logic ---
+const ICONS = {
+  DEFAULT: {
+    16: "/icons/icon-default-16.png",
+    32: "/icons/icon-default-32.png",
+    48: "/icons/icon-default-48.png",
+    128: "/icons/icon-default-128.png",
+  },
+  UNSOLVED: {
+    16: "/icons/icon-todo-16.png",
+    32: "/icons/icon-todo-32.png",
+    48: "/icons/icon-todo-48.png",
+    128: "/icons/icon-todo-128.png",
+  },
+  SOLVED: {
+    16: "/icons/icon-solved-16.png",
+    32: "/icons/icon-solved-32.png",
+    48: "/icons/icon-solved-48.png",
+    128: "/icons/icon-solved-128.png",
+  },
+};
+
+async function updateIcon(tabId, url) {
+  try {
+    let currentUrl = url;
+    if (!currentUrl) {
+      const tab = await chrome.tabs.get(tabId);
+      if (!tab || !tab.url) {
+        console.warn("No URL found for the current tab.");
+        return;
+      }
+      currentUrl = tab.url;
+    }
+
+    const problemInfo = getProblemInfo(currentUrl);
+    let iconPath = ICONS.DEFAULT;
+    if (problemInfo.isProblemPage) {
+      const problemData = await getProblemData(problemInfo.canonicalUrl);
+      if (problemData) {
+        if (problemData.status === "Unsolved") {
+          iconPath = ICONS.UNSOLVED;
+        }
+        if (problemData.status === "Solved") {
+          iconPath = ICONS.SOLVED;
+        }
+        // Unexpected state is equivalent to default.
+      }
+      // If problem is not tracked, it remains default.
+    }
+
+    await chrome.action.setIcon({ tabId: tabId, path: iconPath });
+  } catch (error) {
+    if (error.message.includes("Invalid tab ID")) {
+      console.warn("Invalid tab ID:", tabId);
+    } else {
+      console.error(`Error updating icon for tab ${tabId}: `, error);
+    }
+  }
+}
+
 // --- Event Listener for Icon Click ---
 chrome.action.onClicked.addListener(async (tab) => {
   // Ignore clicks on pages without a URL
@@ -173,8 +233,44 @@ chrome.action.onClicked.addListener(async (tab) => {
       console.warn("Problem state is unknown:", currentProblemData);
     }
 
-    // TODO: Update icon based on state!
+    await updateIcon(tab.id, canonicalUrl);
   } catch (error) {
     console.error("Error processing icon click action:", error);
+  }
+});
+
+// --- Event Listener for Tab Updates ---
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete" && tab.url) {
+    console.log("Tab updated:", tabId, tab.url);
+    updateIcon(tabId, tab.url);
+  }
+});
+
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+  try {
+      const tab = await chrome.tabs.get(activeInfo.tabId);
+      if (tab && tab.url) {
+          updateIcon(activeInfo.tabId, tab.url);
+      }
+  } catch (error) {
+      console.error(`Error getting tab info for activated tab ${activeInfo.tabId}:`, error);
+  }
+});
+
+// --- Add Listener for Storage Changes ---
+// This handles cases where data might change due to sync from another browser instance.
+chrome.storage.onChanged.addListener(async (changes, areaName) => {
+  if (areaName === 'sync' && changes[STORAGE_KEY_PROBLEMS]) {
+    console.log("Storage changed, checking active tab icon.");
+    try {
+        const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (activeTab && activeTab.id && activeTab.url) {
+            // Re-run updateIcon for the active tab to reflect potential changes
+            updateIcon(activeTab.id, activeTab.url);
+        }
+    } catch (error) {
+        console.error("Error updating icon on storage change:", error);
+    }
   }
 });
