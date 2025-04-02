@@ -1,24 +1,50 @@
 console.log("Upsolve Tracker: Background script loaded.");
 
-// Listener for the extension being installed/updated
-chrome.runtime.onInstalled.addListener(() => {
-  console.log("Upsolve Tracker: Extension Installed/Updated.");
-  // TODO: Setup default storage values if needed
-  // TODO: Create context menu (FR5)
-});
+function getProblemInfo(urlString) {
+  try {
+    const url = new URL(urlString);
+    // --- Codeforces Check ---
+    // Matches URLs like:
+    // - codeforces.com/problemset/problem/CONTEST_ID/PROBLEM_CODE
+    // - codeforces.com/contest/CONTEST_ID/problem/PROBLEM_CODE
+    // - codeforces.com/gym/GYM_ID/problem/PROBLEM_CODE
+    if (url.hostname.endsWith("codeforces.com")) {
+      const cfPathRegex =
+        /^\/(?:problemset\/problem|contest\/\d+|gym\/\d+)\/problem\/[A-Z0-9]+/i;
+      if (cfPathRegex.test(url.pathname)) {
+        // Use hostname + pathname as the canonical identifier for now.
+        // Removes query parameters and hash fragments.
+        const canonicalUrl = url.origin + url.pathname;
+        return {
+          isProblemPage: true,
+          platform: "CF",
+          canonicalUrl: canonicalUrl,
+        };
+      }
+    }
+    // --- LeetCode Check ---
+    // Matches URLs like:
+    // - leetcode.com/problems/PROBLEM-NAME/
+    // - leetcode.com/problems/PROBLEM-NAME/description/
+    // - leetcode.com/problems/PROBLEM-NAME/submissions/
+    if (url.hostname.endsWith("leetcode.com")) {
+      const lcProblemRegex = /^\/problems\/([a-zA-Z0-9-]+)\/?/; // Captures the problem slug
+      const match = url.pathname.match(lcProblemRegex);
 
-// Listener for the extension icon click (FR4)
-chrome.action.onClicked.addListener((tab) => {
-  console.log("Upsolve Tracker: Icon clicked on tab:", tab.id, "URL:", tab.url);
-  // TODO: Implement FR1 (Platform Detection based on tab.url)
-  // TODO: Implement FR4.1 (Toggle logic)
-  // TODO: Implement FR4.2 (Update storage)
-  // TODO: Implement FR6 (Update icon dynamically based on logic)
-  // TODO: Implement FR4.3 (Handle non-problem pages)
-});
-
-// Placeholder for receiving messages from content script (if needed later)
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log("Upsolve Tracker: Message received", message);
-    // TODO: Handle messages (e.g., scraped data from content script)
-});
+      if (match && match[1]) {
+        // Construct canonical URL as origin + /problems/ + slug + /
+        const problemSlug = match[1];
+        const canonicalUrl = `${url.origin}/problems/${problemSlug}/`;
+        return {
+          isProblemPage: true,
+          platform: "LC",
+          canonicalUrl: canonicalUrl,
+        };
+      }
+    }
+  } catch (e) {
+    console.error("Upsolve Tracker: Error parsing URL:", urlString, e);
+    return { isProblemPage: false };
+  }
+  return { isProblemPage: false };
+}
