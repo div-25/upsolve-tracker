@@ -1,5 +1,6 @@
 console.log("Upsolve Tracker: Background script loaded.");
 
+// --- URL Parsing and Problem Detection ---
 function getProblemInfo(urlString) {
   try {
     const url = new URL(urlString);
@@ -49,6 +50,7 @@ function getProblemInfo(urlString) {
   return { isProblemPage: false };
 }
 
+// --- Storage key and functions ---
 const STORAGE_KEY_PROBLEMS = "upsolveProblems";
 
 async function getAllProblems() {
@@ -68,7 +70,7 @@ async function getProblemData(canonicalUrl) {
 
 async function saveProblem(problemData) {
   if (!problemData || !problemData.url) {
-    console.error("Cannot save problem data: Invalid data: ", problemData);
+    console.error("Cannot save problem data: Invalid data:", problemData);
     return false;
   }
   const canonicalUrl = problemData.url;
@@ -109,3 +111,70 @@ async function removeProblem(canonicalUrl) {
     return false;
   }
 }
+
+// --- Event Listener for Icon Click ---
+chrome.action.onClicked.addListener(async (tab) => {
+  // Ignore clicks on pages without a URL
+  // TODO: Maybe show a popup or notification instead?
+  if (!tab.url) {
+    console.warn("No URL found in the current tab.");
+    return;
+  }
+
+  console.log("Upsolve Tracker: Icon clicked on tab:", tab.id, tab.url);
+
+  const problemInfo = getProblemInfo(tab.url);
+  if (!problemInfo.isProblemPage) {
+    // TODO: Maybe open list.html here.
+    console.log("Not a recognized problem page. Doing nothing. URL: ", tab.url);
+    return;
+  }
+
+  const { platform, canonicalUrl } = problemInfo;
+  console.log(
+    `Upsolve Tracker processing action for: ${platform} - ${canonicalUrl}`
+  );
+
+  try {
+    const currentProblemData = await getProblemData(canonicalUrl);
+    const now = new Date().toISOString();
+    if (currentProblemData == null) {
+      // State: Not Tracked -> Add as Unsolved
+      console.log("Adding new problem to storage.");
+      const newProblem = {
+        url: canonicalUrl,
+        platform: platform,
+        // TODO: Scrape title and tags.
+        title: canonicalUrl,
+        tags: [],
+        status: "Unsolved",
+        dateAdded: now,
+        dateSolved: null,
+      };
+      await saveProblem(newProblem);
+      console.log("Problem added:", newProblem);
+    } else if (currentProblemData.status === "Unsolved") {
+      // State: Unsolved -> Mark as Solved
+      console.log("Marking problem as solved.");
+      const updatedProblem = {
+        ...currentProblemData,
+        status: "Solved",
+        dateSolved: now,
+      };
+      await saveProblem(updatedProblem);
+      console.log("Problem updated:", updatedProblem);
+    } else if (currentProblemData.status === "Solved") {
+      // State: Solved -> Remove from tracker
+      console.log("Problem is solved. Now removing from tracker!");
+      await removeProblem(canonicalUrl);
+      console.log("Problem removed from tracker.", canonicalUrl);
+    } else {
+      // Should not reach here.
+      console.warn("Problem state is unknown:", currentProblemData);
+    }
+
+    // TODO: Update icon based on state!
+  } catch (error) {
+    console.error("Error processing icon click action:", error);
+  }
+});
