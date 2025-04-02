@@ -48,3 +48,64 @@ function getProblemInfo(urlString) {
   }
   return { isProblemPage: false };
 }
+
+const STORAGE_KEY_PROBLEMS = "upsolveProblems";
+
+async function getAllProblems() {
+  try {
+    const data = await chrome.storage.sync.get(STORAGE_KEY_PROBLEMS);
+    return data[STORAGE_KEY_PROBLEMS] || {};
+  } catch (error) {
+    console.error("Errro fetching problems from storage:", error);
+    return {};
+  }
+}
+
+async function getProblemData(canonicalUrl) {
+  const problems = await getAllProblems();
+  return problems[canonicalUrl] || null;
+}
+
+async function saveProblem(problemData) {
+  if (!problemData || !problemData.url) {
+    console.error("Cannot save problem data: Invalid data: ", problemData);
+    return false;
+  }
+  const canonicalUrl = problemData.url;
+  try {
+    const problems = await getAllProblems();
+    const existingData = problems[canonicalUrl] || {};
+    problems[canonicalUrl] = {
+      ...existingData,
+      ...problemData,
+    };
+
+    await chrome.storage.sync.set({ [STORAGE_KEY_PROBLEMS]: problems });
+    console.log("Problem saved/updated:", problems[canonicalUrl]);
+    return true;
+  } catch (error) {
+    console.error(`Error saving problem ${canonicalUrl}: `, error);
+    if (error.message.includes("QUOTA_BYTES")) {
+      console.warn("Storage quota might be exceeded.");
+    }
+    return false;
+  }
+}
+
+async function removeProblem(canonicalUrl) {
+  try {
+    const problems = await getAllProblems();
+    if (problems[canonicalUrl]) {
+      delete problems[canonicalUrl];
+      await chrome.storage.sync.set({ [STORAGE_KEY_PROBLEMS]: problems });
+      console.log("Problem removed:", canonicalUrl);
+      return true;
+    } else {
+      console.warn("Problem not found, cannot remove:", canonicalUrl);
+      return false;
+    }
+  } catch (error) {
+    console.error(`Error removing problem ${canonicalUrl}: `, error);
+    return false;
+  }
+}
