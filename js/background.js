@@ -50,6 +50,65 @@ function getProblemInfo(urlString) {
   return { isProblemPage: false };
 }
 
+// Generate a readable title from a LeetCode URL slug.
+function generateTitleFromLeetcodeUrl(canonicalUrl) {
+  try {
+    const url = new URL(canonicalUrl);
+    const pathParts = url.pathname.split("/");
+    if (pathParts.length >= 3 && pathParts[1] === "problems" && pathParts[2]) {
+      const problemSlug = pathParts[2]; // Extract the slug from the URL
+      const title = problemSlug
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+      return title;
+    }
+  } catch (error) {
+    console.error(
+      "Error generating title from Leetcode URL:",
+      canonicalUrl,
+      error
+    );
+  }
+}
+
+function sendMessageToTab(tabId, message) {
+  return new Promise((resolve) => {
+    // Safety check for tabId
+    if (typeof tabId !== "number") {
+      console.error(
+        "Background: Invalid tabId provided to sendMessageToTab:",
+        tabId
+      );
+      resolve(null);
+      return;
+    }
+    console.log(
+      `Background: Attempting to send message to tabId ${tabId}`,
+      message
+    );
+
+    chrome.tabs.sendMessage(tabId, message, (response) => {
+      // Always log whether lastError occurred
+      if (chrome.runtime.lastError) {
+        console.warn(
+          `Background: chrome.runtime.lastError is set for tab ${tabId}: ${chrome.runtime.lastError.message}`
+        );
+        resolve(null); // Resolve null on error
+      } else {
+        // Log exactly what was received, even if undefined
+        console.log(
+          `Background: Raw response received from tab ${tabId}:`,
+          response
+        );
+        console.log(`Background: Typeof response: ${typeof response}`); // Log the type explicitly
+        // Resolve with the received value
+        resolve(response);
+      }
+    });
+  });
+}
+
 // --- Storage key and functions ---
 const STORAGE_KEY_PROBLEMS = "upsolveProblems";
 
@@ -176,12 +235,10 @@ async function updateIcon(tabId, url) {
 chrome.action.onClicked.addListener(async (tab) => {
   // Ignore clicks on pages without a URL
   // TODO: Maybe show a popup or notification instead?
-  if (!tab.url) {
+  if (!tab.url || !tab.id) {
     console.warn("No URL found in the current tab.");
     return;
   }
-
-  console.log("Upsolve Tracker: Icon clicked on tab:", tab.id, tab.url);
 
   const problemInfo = getProblemInfo(tab.url);
   if (!problemInfo.isProblemPage) {
@@ -191,9 +248,7 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 
   const { platform, canonicalUrl } = problemInfo;
-  console.log(
-    `Upsolve Tracker processing action for: ${platform} - ${canonicalUrl}`
-  );
+  const tabId = tab.id;
 
   try {
     const currentProblemData = await getProblemData(canonicalUrl);
@@ -201,12 +256,35 @@ chrome.action.onClicked.addListener(async (tab) => {
     if (currentProblemData == null) {
       // State: Not Tracked -> Add as Unsolved
       console.log("Adding new problem to storage.");
+
+      let scrapedTitle = null;
+      let scrapedTags = [];
+
+      try {
+        // Send message to content script to get details.
+        const response = await sendMessageToTab(tabId, {
+          type: "GET_PROBLEM_DETAILS",
+        });
+        if (response) {
+          scrapedTitle = response.title || null;
+          scrapedTags = response.tags || [];
+        } else {
+          console.warn("Background: response is null or falsy.");
+        }
+      } catch (error) {
+        console.error("Error sending message to content script:", error);
+      }
+
+      let problemTitle = scrapedTitle || canonicalUrl; // Default placeholder
+      if (!scrapedTitle && platform === "LC") {
+        problemTitle = generateTitleFromLeetcodeUrl(canonicalUrl);
+      }
+
       const newProblem = {
         url: canonicalUrl,
         platform: platform,
-        // TODO: Scrape title and tags.
-        title: canonicalUrl,
-        tags: [],
+        title: problemTitle,
+        tags: scrapedTags,
         status: "Unsolved",
         dateAdded: now,
         dateSolved: null,
@@ -249,28 +327,36 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
   try {
-      const tab = await chrome.tabs.get(activeInfo.tabId);
-      if (tab && tab.url) {
-          updateIcon(activeInfo.tabId, tab.url);
-      }
+    const tab = await chrome.tabs.get(activeInfo.tabId);
+    if (tab && tab.url) {
+      updateIcon(activeInfo.tabId, tab.url);
+    }
   } catch (error) {
-      console.error(`Error getting tab info for activated tab ${activeInfo.tabId}:`, error);
+    console.error(
+      `Error getting tab info for activated tab ${activeInfo.tabId}:`,
+      error
+    );
   }
 });
 
 // --- Add Listener for Storage Changes ---
 // This handles cases where data might change due to sync from another browser instance.
 chrome.storage.onChanged.addListener(async (changes, areaName) => {
-  if (areaName === 'sync' && changes[STORAGE_KEY_PROBLEMS]) {
+  if (areaName === "sync" && changes[STORAGE_KEY_PROBLEMS]) {
     console.log("Storage changed, checking active tab icon.");
     try {
-        const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (activeTab && activeTab.id && activeTab.url) {
-            // Re-run updateIcon for the active tab to reflect potential changes
-            updateIcon(activeTab.id, activeTab.url);
-        }
+      const [activeTab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      if (activeTab && activeTab.id && activeTab.url) {
+        // Re-run updateIcon for the active tab to reflect potential changes
+        updateIcon(activeTab.id, activeTab.url);
+      }
     } catch (error) {
-        console.error("Error updating icon on storage change:", error);
+      console.error("Error updating icon on storage change:", error);
     }
   }
 });
+
+console.log("Upsolve Tracker: Background script initialized.");

@@ -1,22 +1,22 @@
 body {
-    font-family: sans-serif;
-    padding: 1em;
-    min-width: 600px; /* Give it some initial space */
+  font-family: sans-serif;
+  padding: 1em;
+  min-width: 600px; /* Give it some initial space */
 }
 
 h1 {
-    text-align: center;
-    color: #333;
+  text-align: center;
+  color: #333;
 }
 
 #controls {
-    margin-bottom: 1em;
-    padding-bottom: 1em;
-    border-bottom: 1px solid #ccc;
+  margin-bottom: 1em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #ccc;
 }
 
 #problem-list {
-    /* Styles for the list/table container */
+  /* Styles for the list/table container */
 }
 
 /* TODO: Add styles for table/list items, status indicators, filters, buttons */
