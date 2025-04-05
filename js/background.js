@@ -359,4 +359,36 @@ chrome.storage.onChanged.addListener(async (changes, areaName) => {
   }
 });
 
-console.log("Upsolve Tracker: Background script initialized.");
+// -- Context Menu Setup --
+const CONTEXT_MENU_ID = "viewUpsolveList";
+
+// Use chrome.runtime.onInstalled to create the context menu
+// This runs when the extension is installed or updated.
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: CONTEXT_MENU_ID,
+    title: "View Upsolve List",
+    contexts: ["action"], // Show context menu only on the browser action icon
+  });
+  console.log("Upsolve Tracker: Context menu created.");
+});
+
+// Listener for context menu clicks
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === CONTEXT_MENU_ID) {
+    console.log("Upsolve Tracker: Context menu clicked.");
+
+    // Construct the URL for the list page
+    const listPageUrl = chrome.runtime.getURL("html/list.html");
+    // Check if a tab with this URL is already open
+    chrome.tabs.query({ url: listPageUrl }, (tabs) => {
+      if (tabs.length > 0) {
+        // If the tab is already open, focus it and the window.
+        chrome.tabs.update(tabs[0].id, { active: true });
+        chrome.windows.update(tabs[0].windowId, { focused: true });
+      } else {
+        chrome.tabs.create({ url: listPageUrl });
+      }
+    });
+  }
+});

@@ -1,22 +1,103 @@
 body {
   font-family: sans-serif;
   padding: 1em;
-  min-width: 600px; /* Give it some initial space */
+  background-color: #f8f9fa; /* Light background */
+  color: #212529; /* Default text color */
 }
 
 h1 {
   text-align: center;
   color: #333;
+  margin-bottom: 1.5em;
 }
 
 #controls {
-  margin-bottom: 1em;
-  padding-bottom: 1em;
-  border-bottom: 1px solid #ccc;
+  margin-bottom: 1.5em;
+  padding: 1em;
+  background-color: #e9ecef;
+  border-radius: 5px;
 }
 
-#problem-list {
-  /* Styles for the list/table container */
+#problem-list-container {
+  background-color: #fff;
+  padding: 1em;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: auto; /* Add scroll for smaller screens if table is wide */
 }
 
-/* TODO: Add styles for table/list items, status indicators, filters, buttons */
+/* --- Table Styling --- */
+#problems-table {
+  width: 100%;
+  border-collapse: collapse; /* Removes double borders */
+  margin-top: 1em;
+}
+
+#problems-table th,
+#problems-table td {
+  border: 1px solid #dee2e6; /* Light grey border */
+  padding: 0.75em;
+  text-align: left;
+  vertical-align: middle;
+}
+
+#problems-table th {
+  background-color: #f1f3f5; /* Slightly darker header */
+  font-weight: bold;
+}
+
+#problems-table tbody tr:nth-child(odd) {
+  background-color: #f8f9fa; /* Zebra striping for readability */
+}
+
+#problems-table tbody tr:hover {
+  background-color: #e9ecef; /* Highlight on hover */
+}
+
+.loading-message,
+.no-problems-message {
+  text-align: center;
+  font-style: italic;
+  color: #6c757d; /* Grey text */
+  padding: 2em;
+}
+
+/* --- Status Styling --- */
+.status-unsolved .status-indicator {
+  color: #dc3545; /* Red */
+  font-weight: bold;
+}
+.status-solved .status-indicator {
+  color: #28a745; /* Green */
+  font-weight: bold;
+}
+/* Alternative: Style the whole row */
+/*
+tr.status-unsolved {
+    background-color: #f8d7da;
+}
+tr.status-solved {
+     background-color: #d4edda;
+}
+*/
+
+/* --- Link Styling --- */
+td a {
+  color: #007bff; /* Blue link */
+  text-decoration: none;
+}
+td a:hover {
+  text-decoration: underline;
+}
+
+/* --- Tag Styling (Basic) --- */
+.tags-list span {
+  display: inline-block;
+  background-color: #6c757d; /* Grey background */
+  color: white;
+  padding: 0.2em 0.5em;
+  margin-right: 0.3em;
+  margin-bottom: 0.3em;
+  border-radius: 0.25rem; /* Rounded corners */
+  font-size: 0.85em;
+}

@@ -3,22 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Upsolve Tracker List</title>
-    <link rel="stylesheet" href="../css/list.css" />
+    <title>Upsolve Tracker</title>
+    <link rel="stylesheet" href="/css/list.css" />
   </head>
   <body>
-    <h1>My Upsolve Problems List</h1>
+    <h1>My Upsolve List</h1>
     <div id="controls">
       <!-- TODO: Add Filter Controls (FR9.1) -->
       <!-- TODO: Add Sort Controls (FR9.2) -->
       <!-- TODO: Add Export Buttons (FR11.1, FR12.1) -->
       <!-- TODO: Add Import Button (FR12.2) -->
+      <p>Controls placeholder</p>
     </div>
-    <div id="problem-list">
-      <!-- Problems will be loaded here by list.js -->
-      <p>Loading problems...</p>
+    <div id="problem-list-container">
+      <!-- Table will be populated by list.js -->
+      <table id="problems-table">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Title</th>
+            <th>Platform</th>
+            <th>Tags</th>
+            <th>Date Added</th>
+            <th>Date Solved</th>
+          </tr>
+        </thead>
+        <tbody id="problems-table-body">
+          <!-- Table rows will be inserted here -->
+          <tr>
+            <td colspan="6" class="loading-message">Loading problems...</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <script src="../js/list.js"></script>
+    <script src="/html/list.js" type="module"></script>
   </body>
 </html>
