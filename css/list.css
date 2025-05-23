@@ -1,103 +1,415 @@
+/* css/list.css */
+/* Basic Reset & Font Setup */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  font-family: sans-serif;
-  padding: 1em;
-  background-color: #f8f9fa; /* Light background */
-  color: #212529; /* Default text color */
+  font-family: "Inter", "Noto Sans", sans-serif;
+  background-color: #ffffff; /* White background from image */
+  color: #121417; /* Default text color from image */
+  min-height: 100vh;
+  display: flex; /* To allow .upsolve-app-container to grow */
+  flex-direction: column;
 }
 
-h1 {
-  text-align: center;
-  color: #333;
-  margin-bottom: 1.5em;
-}
-
-#controls {
-  margin-bottom: 1.5em;
-  padding: 1em;
-  background-color: #e9ecef;
-  border-radius: 5px;
-}
-
-#problem-list-container {
-  background-color: #fff;
-  padding: 1em;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow-x: auto; /* Add scroll for smaller screens if table is wide */
-}
-
-/* --- Table Styling --- */
-#problems-table {
+.upsolve-app-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Make it take full height */
   width: 100%;
-  border-collapse: collapse; /* Removes double borders */
-  margin-top: 1em;
 }
 
-#problems-table th,
-#problems-table td {
-  border: 1px solid #dee2e6; /* Light grey border */
-  padding: 0.75em;
-  text-align: left;
-  vertical-align: middle;
+/* Header Styling */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 40px; /* py-3 px-10 */
+  border-bottom: 1px solid #f1f2f4; /* border-b-[#f1f2f4] */
+  white-space: nowrap;
 }
 
-#problems-table th {
-  background-color: #f1f3f5; /* Slightly darker header */
-  font-weight: bold;
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* gap-4 */
+  color: #121417;
 }
 
-#problems-table tbody tr:nth-child(odd) {
-  background-color: #f8f9fa; /* Zebra striping for readability */
+.logo-icon svg {
+  width: 16px; /* size-4 */
+  height: 16px; /* size-4 */
+  fill: currentColor; /* Uses parent color */
 }
 
-#problems-table tbody tr:hover {
-  background-color: #e9ecef; /* Highlight on hover */
+.logo-title h2 {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 700; /* font-bold */
+  line-height: 1.25; /* leading-tight (approx) */
+  letter-spacing: -0.015em; /* tracking-[-0.015em] */
 }
 
-.loading-message,
-.no-problems-message {
-  text-align: center;
-  font-style: italic;
-  color: #6c757d; /* Grey text */
-  padding: 2em;
+.help-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px; /* h-10 */
+  min-width: 40px; /* To make it round with only icon */
+  padding: 0 10px; /* px-2.5 */
+  background-color: #f1f2f4;
+  border: none;
+  border-radius: 9999px; /* rounded-full */
+  cursor: pointer;
+  color: #121417;
 }
 
-/* --- Status Styling --- */
-.status-unsolved .status-indicator {
-  color: #dc3545; /* Red */
-  font-weight: bold;
-}
-.status-solved .status-indicator {
-  color: #28a745; /* Green */
-  font-weight: bold;
-}
-/* Alternative: Style the whole row */
-/*
-tr.status-unsolved {
-    background-color: #f8d7da;
-}
-tr.status-solved {
-     background-color: #d4edda;
-}
-*/
-
-/* --- Link Styling --- */
-td a {
-  color: #007bff; /* Blue link */
-  text-decoration: none;
-}
-td a:hover {
-  text-decoration: underline;
+.help-button svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
 }
 
-/* --- Tag Styling (Basic) --- */
-.tags-list span {
-  display: inline-block;
-  background-color: #6c757d; /* Grey background */
+/* Main Content Area Styling */
+.main-content {
+  flex-grow: 1; /* Takes remaining space */
+  display: flex;
+  justify-content: center;
+  padding-top: 20px; /* py-5 */
+  padding-bottom: 20px; /* py-5 */
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: 960px; /* max-w-[960px] */
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Should this be flex-1? */
+}
+
+.controls-section {
+  padding: 12px 16px; /* px-4 py-3 approx */
+  /* No need for color: #677583; anymore */
+}
+
+/* Search Bar Styling */
+.search-bar-wrapper {
+  display: flex;
+  align-items: stretch; /* Make icon wrapper and input same height */
+  height: 48px; /* h-12 */
+  width: 100%;
+  background-color: #f1f2f4; /* bg-[#f1f2f4] */
+  border-radius: 0.75rem; /* rounded-xl */
+  margin-bottom: 12px; /* Space below search bar (gap-3 p-3 implies this) */
+}
+
+.search-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 16px; /* pl-4 */
+  color: #677583; /* text-[#677583] */
+}
+
+.search-icon-wrapper svg {
+  width: 24px;
+  height: 24px;
+}
+
+.search-input-field {
+  flex-grow: 1; /* Take remaining space */
+  min-width: 0; /* Important for flex items */
+  border: none;
+  background-color: transparent; /* Inherit from wrapper */
+  padding: 0 16px 0 8px; /* px-4, pl-2 after icon */
+  font-size: 1rem; /* text-base */
+  color: #121417; /* text-[#121417] */
+  border-radius: 0 0.75rem 0.75rem 0; /* rounded-r-xl if icon wrapper isn't part of it */
+}
+.search-input-field::placeholder {
+  color: #677583; /* placeholder:text-[#677583] */
+  font-weight: 400; /* font-normal */
+}
+.search-input-field:focus {
+  outline: none; /* focus:outline-0 */
+  /* Tailwind's focus:ring-0 and focus:border-none means no visual change on focus by default */
+}
+
+/* Filter Pills Styling */
+.filter-pills-wrapper {
+  display: flex;
+  gap: 12px; /* gap-3 */
+  padding: 12px 0; /* p-3 approx, removed pr-4 because items will have their own padding */
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.filter-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px; /* h-8 */
+  padding: 0 16px; /* pl-4 pr-4 */
+  background-color: #f1f2f4; /* bg-[#f1f2f4] */
+  border: 1px solid transparent; /* For potential active state border */
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: #121417; /* text-[#121417] */
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.filter-pill:hover {
+  background-color: #e2e4e7; /* Slightly darker on hover */
+}
+
+.filter-pill.active {
+  /* To make it look like the active one in the image, it seems to be the same as inactive.
+     If we want a different active state: */
+  background-color: #d1d3d6; /* Example active state */
+  /* Or:
+  background-color: #007bff; // A primary color
   color: white;
-  padding: 0.2em 0.5em;
-  margin-right: 0.3em;
-  margin-bottom: 0.3em;
-  border-radius: 0.25rem; /* Rounded corners */
-  font-size: 0.85em;
+  */
+}
+
+/* Summary Section (Total Problems) */
+.summary-section {
+  padding: 4px 16px 12px 16px; /* pb-3 pt-1 px-4 */
+}
+.summary-section p {
+  color: #677583; /* text-[#677583] */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 400; /* font-normal */
+}
+
+.problem-grid-section {
+  padding: 16px; /* p-4 from example */
+}
+
+.problem-grid {
+  display: grid;
+  /* grid-cols-[repeat(auto-fit,minmax(158px,1fr))] */
+  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+  gap: 12px; /* gap-3 from example */
+}
+
+.grid-placeholder-message {
+  /* Style for loading/no problems message inside grid */
+  grid-column: 1 / -1; /* Make it span all columns */
+  text-align: center;
+  padding: 40px 20px;
+  color: #888; /* Muted text */
+  font-style: italic;
+}
+
+/* Problem Card Styling */
+.problem-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* gap-3 from example for spacing between image and text */
+  /* pb-3 is effectively margin-bottom if cards are stacked, handled by grid gap here */
+  border: 1px solid #f0f0f0; /* Subtle border for cards */
+  border-radius: 0.75rem; /* rounded-xl */
+  background-color: #fff; /* Card background */
+  overflow: hidden; /* To ensure image corners are clipped if image is direct child */
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  cursor: pointer; /* Make card feel clickable to go to problem */
+}
+
+.problem-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card-image-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* aspect-square */
+  background-color: #e2e8f0; /* Default placeholder color (light gray) */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* The example uses background-image. We'll use classes for platform colors. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #4a5568; /* Text color for placeholder */
+  font-size: 1.5rem;
+}
+
+/* Platform-specific placeholder styles */
+.platform-cf {
+  background-color: #2c5282; /* Example Codeforces blue */
+  color: white;
+}
+.platform-lc {
+  background-color: #f59e0b; /* Example LeetCode orange/yellow */
+  color: #4a4a4a;
+}
+/* We can add actual SVG logos here later */
+.platform-cf::after {
+  content: "CF";
+}
+.platform-lc::after {
+  content: "LC";
+}
+
+.card-info {
+  padding: 0px 12px 12px 12px; /* Padding for text content, adjust as needed */
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Spacing between text elements */
+}
+
+.card-title {
+  color: #121417; /* text-[#121417] */
+  font-size: 1rem; /* text-base */
+  font-weight: 500; /* font-medium */
+  line-height: 1.4; /* leading-normal (approx) */
+  /* Basic truncation for long titles */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-date {
+  color: #677583; /* text-[#677583] */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 400; /* font-normal */
+}
+
+.card-tags {
+  margin-top: 4px; /* Add a bit of space before tags */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px; /* Space between tags */
+}
+
+.card-tags .tag {
+  background-color: #e2e4e7; /* Light gray for tags */
+  color: #4a5568; /* Darker gray text */
+  font-size: 0.75rem; /* Smaller tags */
+  padding: 2px 8px;
+  border-radius: 9999px; /* Fully rounded */
+  font-weight: 500;
+}
+
+.card-status {
+  margin-top: auto; /* Push status to the bottom if card height varies */
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding-top: 6px;
+}
+.card-status.status-solved {
+  color: #38a169; /* Green for solved */
+}
+.card-status.status-unsolved {
+  color: #e53e3e; /* Red for pending/unsolved */
+}
+
+/* Pagination Section */
+.pagination-section {
+  padding: 16px;
+  color: #677583;
+  display: flex; /* Prepare for actual pagination controls */
+  justify-content: center;
+  align-items: center;
+}
+
+/* Platform Filter Styling - For Custom Dropdown */
+.platform-filter-wrapper {
+  position: relative; /* Crucial for positioning the custom dropdown */
+  padding: 12px 0; /* Keep existing padding */
+}
+
+.platform-filter-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Distribute text and caret */
+  width: 180px; /* Give it a fixed width or min-width, adjust as needed */
+  text-align: left;
+  height: 32px;
+  padding: 0 12px; /* Adjusted padding for text then caret */
+  background-color: #f1f2f4;
+  border: 1px solid #e2e4e7; /* Consistent border */
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #121417;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.platform-filter-button:hover {
+  background-color: #e9edf0; /* Slightly different hover */
+  border-color: #d1d5db;
+}
+
+.platform-filter-button.dropdown-open {
+  /* Style for when the custom dropdown is open */
+  border-color: #adb5bd; /* Example: a slightly darker border */
+  /* You could also change background or add a subtle box-shadow */
+}
+
+#selected-platform-text {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.platform-filter-button svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0; /* Prevent caret from shrinking */
+  transition: transform 0.2s ease-in-out; /* For rotating caret */
+}
+
+.platform-filter-button.dropdown-open svg {
+  transform: rotate(180deg); /* Rotate caret when dropdown is open */
+}
+
+/* Custom Dropdown Options Styling */
+.custom-dropdown-options {
+  display: none; /* Hidden by default */
+  position: absolute;
+  top: calc(100% + 4px); /* Position below the button with a small gap */
+  left: 0;
+  width: 100%; /* Make it as wide as the button's wrapper, or specific width */
+  min-width: 180px; /* Match button width or make wider if content needs it */
+  background-color: #ffffff;
+  border: 1px solid #d1d3d6; /* Border consistent with input/button focus */
+  border-radius: 0.5rem; /* rounded-lg, like Tailwind's large */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Standard dropdown shadow */
+  z-index: 1000; /* Ensure it's on top */
+  max-height: 200px; /* Add scroll if many options */
+  overflow-y: auto;
+  padding: 4px 0; /* Small padding around the options list */
+}
+
+.custom-dropdown-options.open {
+  display: block; /* Show when .open class is added by JS */
+}
+
+.custom-option {
+  padding: 8px 16px; /* Adjust padding for option items */
+  font-size: 0.875rem;
+  color: #121417;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap; /* Prevent options from wrapping */
+}
+
+.custom-option:hover {
+  background-color: #f1f2f4; /* Light hover for options */
+}
+
+.custom-option.selected {
+  background-color: #e2e4e7; /* Slightly darker for a selected item (optional visual cue) */
+  font-weight: 500; /* Make selected item bold */
 }
