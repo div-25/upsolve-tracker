@@ -323,15 +323,16 @@ body {
 
 /* Platform Filter Styling - For Custom Dropdown */
 .platform-filter-wrapper {
-  position: relative; /* Crucial for positioning the custom dropdown */
-  padding: 12px 0; /* Keep existing padding */
+  position: relative;
+  padding: 12px 0;
+  display: inline-block; /* Add this to make the wrapper only as wide as its content (the button) */
 }
 
 .platform-filter-button {
   display: flex;
   align-items: center;
   justify-content: space-between; /* Distribute text and caret */
-  width: 180px; /* Give it a fixed width or min-width, adjust as needed */
+  width: 180px; /* Button width - dropdown will match this */
   text-align: left;
   height: 32px;
   padding: 0 12px; /* Adjusted padding for text then caret */
@@ -353,7 +354,8 @@ body {
 .platform-filter-button.dropdown-open {
   /* Style for when the custom dropdown is open */
   border-color: #adb5bd; /* Example: a slightly darker border */
-  /* You could also change background or add a subtle box-shadow */
+  border-bottom-left-radius: 0; /* Flatten bottom corners when open */
+  border-bottom-right-radius: 0; /* Flatten bottom corners when open */
 }
 
 #selected-platform-text {
@@ -378,13 +380,14 @@ body {
 .custom-dropdown-options {
   display: none; /* Hidden by default */
   position: absolute;
-  top: calc(100% + 4px); /* Position below the button with a small gap */
+  top: 100%; /* Make it touch the button (or almost) */
   left: 0;
-  width: 100%; /* Make it as wide as the button's wrapper, or specific width */
-  min-width: 180px; /* Match button width or make wider if content needs it */
+  width: 180px; /* Match button width */
   background-color: #ffffff;
-  border: 1px solid #d1d3d6; /* Border consistent with input/button focus */
-  border-radius: 0.5rem; /* rounded-lg, like Tailwind's large */
+  border: 1px solid #adb5bd; /* Match the .dropdown-open border color of the button */
+  border-top: none; /* Remove top border to merge with button */
+  border-bottom-left-radius: 0.5rem; /* Keep bottom rounding */
+  border-bottom-right-radius: 0.5rem; /* Keep bottom rounding */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Standard dropdown shadow */
   z-index: 1000; /* Ensure it's on top */
   max-height: 200px; /* Add scroll if many options */
