@@ -3,6 +3,7 @@ console.log("Upsolve Tracker: List view script loaded.");
 
 // Storage key must match the one used in background.js
 const STORAGE_KEY_PROBLEMS = "upsolveProblems";
+const ITEMS_PER_PAGE = 10;
 
 // --- DOM Element References (Ensure these IDs exist in your list.html) ---
 const problemGridContainer = document.getElementById("problem-grid-container");
@@ -16,6 +17,9 @@ const platformCustomDropdown = document.getElementById(
   "platform-custom-dropdown"
 ); // The div for options
 const searchInput = document.getElementById("search-input"); // For search later
+const prevPageBtn = document.getElementById("prev-page-btn");
+const nextPageBtn = document.getElementById("next-page-btn");
+const pageInfoEl = document.getElementById("page-info");
 
 // --- Global Data Store ---
 let problemsData = []; // Holds the raw data fetched from storage (all problems)
@@ -26,6 +30,8 @@ let currentFilters = {
   // tag: 'all', // We'll handle tag filtering differently if not using a select for it
   search: "",
 };
+let currentPage = 1; // For pagination
+let totalPages = 1; // For pagination
 
 // -- Platform Options Data --
 const platformOptions = [
@@ -44,7 +50,10 @@ document.addEventListener("DOMContentLoaded", () => {
     !platformFilterButton ||
     !platformFilterButton ||
     !platformCustomDropdown ||
-    !searchInput
+    !searchInput ||
+    !prevPageBtn ||
+    !nextPageBtn ||
+    !pageInfoEl
   ) {
     console.error(
       "One or more essential DOM elements for filtering/display are not found! Check IDs."
@@ -59,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   populatePlatformDropdown(); // Populate the custom dropdown first
   initializeFilters();
+  initializePagination();
   loadAndDisplayProblems();
 });
 
@@ -96,6 +106,7 @@ function populatePlatformDropdown() {
       optionDiv.classList.add("selected");
 
       // Apply filters and re-render
+      currentPage = 1; // Reset to first page
       applyFiltersAndRender();
     });
     platformCustomDropdown.appendChild(optionDiv);
@@ -128,10 +139,26 @@ function applyFiltersAndRender() {
     }
     return statusMatch && platformMatch && searchMatch;
   });
-  renderProblemList(filteredProblems);
+
+  // -- Pagination Logic ---
+  totalPages = Math.max(1, Math.ceil(filteredProblems.length / ITEMS_PER_PAGE));
+  // Ensure currentPage is within valid bounds
+  if (currentPage > totalPages) {
+    currentPage = totalPages;
+  }
+  if (currentPage < 1) {
+    currentPage = 1;
+  }
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedProblems = filteredProblems.slice(startIndex, endIndex);
+
+  renderProblemList(paginatedProblems, filteredProblems.length);
+  updatePaginationControls();
 }
 
-function renderProblemList(problemsToRender) {
+function renderProblemList(problemsToRender, totalFilteredCount) {
   if (!problemGridContainer) return;
   problemGridContainer.innerHTML = "";
   console.log(`Rendering ${problemsToRender.length} problems as cards.`);
@@ -153,13 +180,31 @@ function renderProblemList(problemsToRender) {
         : "You haven't tracked any problems yet! Add some. ✨";
     renderMessage(message);
   } else {
-    problemsToRender.sort(
-      (a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)
-    );
+    // problemsToRender are already sorted if problemsData was sorted, and then paginated
+    // No need to sort here again unless you want per-page sorting different from global
     problemsToRender.forEach((problem) => {
       const card = createProblemCard(problem);
       problemGridContainer.appendChild(card);
     });
+  }
+}
+
+function updatePaginationControls() {
+  if (!pageInfoEl || !prevPageBtn || !nextPageBtn) return;
+
+  pageInfoEl.textContent = `Page ${currentPage} of ${totalPages}`;
+  prevPageBtn.disabled = currentPage === 1;
+  nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
+
+  // Hide pagination entirely if only one page and no problems (or few problems)
+  const paginationSection = document.querySelector(".pagination-section");
+  if (paginationSection) {
+    if (totalPages <= 1 && problemsData.length <= ITEMS_PER_PAGE) {
+      // Also consider total problems
+      paginationSection.style.display = "none";
+    } else {
+      paginationSection.style.display = "flex";
+    }
   }
 }
 
@@ -289,6 +334,7 @@ function initializeFilters() {
   // Search Input Listener
   searchInput.addEventListener("input", (event) => {
     currentFilters.search = event.target.value.toLowerCase();
+    currentPage = 1; // Reset to first page on new search
     applyFiltersAndRender();
   });
 
@@ -298,6 +344,7 @@ function initializeFilters() {
 async function loadAndDisplayProblems() {
   console.log("Attempting to load problems from chrome.storage.sync...");
   setLoadingState(true);
+  currentPage = 1; // Reset to first page on full load
   try {
     const data = await chrome.storage.sync.get(STORAGE_KEY_PROBLEMS);
     const problemsMap = data[STORAGE_KEY_PROBLEMS] || {};
@@ -310,4 +357,21 @@ async function loadAndDisplayProblems() {
   } finally {
     setLoadingState(false);
   }
+}
+
+function initializePagination() {
+  prevPageBtn.addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      applyFiltersAndRender(); // Re-render with the new page
+    }
+  });
+
+  nextPageBtn.addEventListener("click", () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      applyFiltersAndRender(); // Re-render with the new page
+    }
+  });
+  console.log("Pagination listeners initialized.");
 }

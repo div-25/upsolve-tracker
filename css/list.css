@@ -195,7 +195,7 @@ body {
   display: grid;
   /* grid-cols-[repeat(auto-fit,minmax(158px,1fr))] */
   grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
-  gap: 12px; /* gap-3 from example */
+  gap: 16px;
 }
 
 .grid-placeholder-message {
@@ -219,6 +219,8 @@ body {
   overflow: hidden; /* To ensure image corners are clipped if image is direct child */
   transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
   cursor: pointer; /* Make card feel clickable to go to problem */
+  width: 100%;
+  max-width: 260px;
 }
 
 .problem-card:hover {
@@ -314,11 +316,47 @@ body {
 
 /* Pagination Section */
 .pagination-section {
-  padding: 16px;
+  padding: 20px 16px;
   color: #677583;
-  display: flex; /* Prepare for actual pagination controls */
+  display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; /* This should vertically align items */
+  /* gap: 12px; Remove direct gap, apply margins instead for more control */
+  margin-top: 20px;
+  border-top: 1px solid #f1f2f4;
+}
+
+.pagination-button {
+  padding: 8px 16px;
+  background-color: #f1f2f4;
+  border: 1px solid #e2e4e7;
+  border-radius: 6px;
+  color: #121417;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  margin: 0 8px; /* Add margin around buttons for spacing */
+}
+
+.pagination-button:hover:not([disabled]) {
+  background-color: #e9edf0;
+  border-color: #d1d5db;
+}
+
+.pagination-button:disabled {
+  background-color: #f8f9fa;
+  color: #adb5bd;
+  cursor: not-allowed;
+  border-color: #e9ecef;
+}
+
+.page-info-display {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #343a40;
+  padding: 0 8px; /* Add some padding so it doesn't stick to potential margins */
+  white-space: nowrap; /* Prevent "Page X of Y" from wrapping */
 }
 
 /* Platform Filter Styling - For Custom Dropdown */
