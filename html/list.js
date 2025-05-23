@@ -368,10 +368,10 @@ function createProblemCard(problemData) {
   statusText.className = "card-status";
   if (problemData.status === "Solved") {
     statusText.classList.add("status-solved");
-    statusText.textContent = "Status: Solved ✅";
+    statusText.textContent = "✅ Solved";
   } else {
     statusText.classList.add("status-unsolved");
-    statusText.textContent = "Status: Pending ⏳";
+    statusText.textContent = "⏳Pending";
   }
 
   cardInfo.appendChild(title);
