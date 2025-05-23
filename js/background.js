@@ -114,7 +114,7 @@ const STORAGE_KEY_PROBLEMS = "upsolveProblems";
 
 async function getAllProblems() {
   try {
-    const data = await chrome.storage.sync.get(STORAGE_KEY_PROBLEMS);
+    const data = await chrome.storage.local.get(STORAGE_KEY_PROBLEMS);
     return data[STORAGE_KEY_PROBLEMS] || {};
   } catch (error) {
     console.error("Errro fetching problems from storage:", error);
@@ -141,7 +141,7 @@ async function saveProblem(problemData) {
       ...problemData,
     };
 
-    await chrome.storage.sync.set({ [STORAGE_KEY_PROBLEMS]: problems });
+    await chrome.storage.local.set({ [STORAGE_KEY_PROBLEMS]: problems });
     console.log("Problem saved/updated:", problems[canonicalUrl]);
     return true;
   } catch (error) {
@@ -158,7 +158,7 @@ async function removeProblem(canonicalUrl) {
     const problems = await getAllProblems();
     if (problems[canonicalUrl]) {
       delete problems[canonicalUrl];
-      await chrome.storage.sync.set({ [STORAGE_KEY_PROBLEMS]: problems });
+      await chrome.storage.local.set({ [STORAGE_KEY_PROBLEMS]: problems });
       console.log("Problem removed:", canonicalUrl);
       return true;
     } else {

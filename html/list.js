@@ -452,11 +452,11 @@ function initializeFilters() {
 }
 
 async function loadAndDisplayProblems() {
-  console.log("Attempting to load problems from chrome.storage.sync...");
+  console.log("Attempting to load problems from chrome.storage.local...");
   setLoadingState(true);
   currentPage = 1; // Reset to first page on full load
   try {
-    const data = await chrome.storage.sync.get(STORAGE_KEY_PROBLEMS);
+    const data = await chrome.storage.local.get(STORAGE_KEY_PROBLEMS);
     const problemsMap = data[STORAGE_KEY_PROBLEMS] || {};
     problemsData = Object.values(problemsMap);
     console.log(`Found ${problemsData.length} raw problems in storage.`);
