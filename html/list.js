@@ -5,21 +5,10 @@ console.log("Upsolve Tracker: List view script loaded.");
 const STORAGE_KEY_PROBLEMS = "upsolveProblems";
 const ITEMS_PER_PAGE = 10;
 
-// --- DOM Element References (Ensure these IDs exist in your list.html) ---
-const problemGridContainer = document.getElementById("problem-grid-container");
-const totalProblemsCountEl = document.getElementById("total-problems-count");
-const filterStatusPills = document.querySelectorAll(
-  ".filter-pills-wrapper .filter-pill"
-); // For status pills
-const platformFilterButton = document.getElementById("platform-filter-button"); // Button that shows current platform
-const selectedPlatformText = document.getElementById("selected-platform-text"); // The span in the button
-const platformCustomDropdown = document.getElementById(
-  "platform-custom-dropdown"
-); // The div for options
-const searchInput = document.getElementById("search-input"); // For search later
-const prevPageBtn = document.getElementById("prev-page-btn");
-const nextPageBtn = document.getElementById("next-page-btn");
-const pageInfoEl = document.getElementById("page-info");
+// -- Theme Variables --
+const THEME_STORAGE_KEY = "upsolveTrackerTheme";
+const LIGHT_THEME = "light";
+const DARK_THEME = "dark";
 
 // --- Global Data Store ---
 let problemsData = []; // Holds the raw data fetched from storage (all problems)
@@ -40,20 +29,44 @@ const platformOptions = [
   { value: "LC", text: "LeetCode" },
 ];
 
+// -- Assign DOM Element references --
+const problemGridContainer = document.getElementById("problem-grid-container");
+const totalProblemsCountEl = document.getElementById("total-problems-count");
+const filterStatusPills = document.querySelectorAll(
+  ".filter-pills-wrapper .filter-pill"
+);
+const platformFilterButton = document.getElementById("platform-filter-button");
+const selectedPlatformText = document.getElementById("selected-platform-text");
+const platformCustomDropdown = document.getElementById(
+  "platform-custom-dropdown"
+);
+const searchInput = document.getElementById("search-input");
+const prevPageBtn = document.getElementById("prev-page-btn");
+const nextPageBtn = document.getElementById("next-page-btn");
+const pageInfoEl = document.getElementById("page-info");
+let themeToggleButton, themeIconMoon, themeIconSun;
+
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded and parsed");
+  // Assign theme toggle elements here specifically
+  themeToggleButton = document.getElementById("theme-toggle-btn");
+  themeIconMoon = document.getElementById("theme-icon-moon");
+  themeIconSun = document.getElementById("theme-icon-sun");
 
   if (
     !problemGridContainer ||
     !totalProblemsCountEl ||
     filterStatusPills.length === 0 ||
     !platformFilterButton ||
-    !platformFilterButton ||
+    !selectedPlatformText ||
     !platformCustomDropdown ||
     !searchInput ||
     !prevPageBtn ||
     !nextPageBtn ||
-    !pageInfoEl
+    !pageInfoEl ||
+    !themeToggleButton ||
+    !themeIconMoon ||
+    !themeIconSun
   ) {
     console.error(
       "One or more essential DOM elements for filtering/display are not found! Check IDs."
@@ -66,11 +79,104 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  initializeTheme(); // Initialize theme first
+  initializeThemeToggle();
   populatePlatformDropdown(); // Populate the custom dropdown first
   initializeFilters();
   initializePagination();
   loadAndDisplayProblems();
 });
+
+// -- Theme Functions --
+/**
+ * Applies the saved theme or default (dark) on page load.
+ */
+async function initializeTheme() {
+  let currentTheme = await getThemePreference();
+  if (!currentTheme) {
+    currentTheme = DARK_THEME; // Make dark theme the default
+    await setThemePreference(currentTheme); // Save default if nothing was stored
+  }
+  applyTheme(currentTheme);
+  updateThemeIcon(currentTheme);
+  console.log("Theme initialized to:", currentTheme);
+}
+
+/**
+ * Applies the given theme to the body and updates the toggle icon.
+ * @param {string} theme - 'light' or 'dark'
+ */
+function applyTheme(theme) {
+  if (theme === DARK_THEME) {
+    document.body.classList.add("dark-theme");
+    document.body.classList.remove("light-theme"); // Just in case
+  } else {
+    document.body.classList.remove("dark-theme");
+    document.body.classList.add("light-theme"); // Explicitly add light-theme class if needed for overrides
+  }
+}
+
+/**
+ * Updates the theme toggle button icon based on the current theme.
+ * @param {string} theme - 'light' or 'dark'
+ */
+function updateThemeIcon(theme) {
+  if (theme === DARK_THEME) {
+    themeIconMoon.style.display = "none";
+    themeIconSun.style.display = "inline-block"; // Or 'block' if it's not inline with text
+  } else {
+    themeIconMoon.style.display = "inline-block";
+    themeIconSun.style.display = "none";
+  }
+}
+
+/**
+ * Retrieves the saved theme preference from chrome.storage.local.
+ * @returns {Promise<string|null>}
+ */
+async function getThemePreference() {
+  try {
+    const data = await chrome.storage.local.get(THEME_STORAGE_KEY);
+    return data[THEME_STORAGE_KEY] || null;
+  } catch (e) {
+    console.error("Error getting theme preference:", e);
+    return null;
+  }
+}
+
+/**
+ * Saves the theme preference to chrome.storage.local.
+ * @param {string} theme - 'light' or 'dark'
+ */
+async function setThemePreference(theme) {
+  try {
+    await chrome.storage.local.set({ [THEME_STORAGE_KEY]: theme });
+  } catch (e) {
+    console.error("Error setting theme preference:", e);
+  }
+}
+
+// Modify initializeFilters to include the theme toggle listener,
+// or add a new dedicated function if preferred.
+function initializeThemeToggle() {
+  if (!themeToggleButton) {
+    console.error("Theme toggle button not found in initializeThemeToggle.");
+    return;
+  }
+  themeToggleButton.addEventListener("click", async () => {
+    console.log("Theme toggle button clicked.");
+    let currentTheme = document.body.classList.contains("dark-theme")
+      ? DARK_THEME
+      : LIGHT_THEME;
+    const newTheme = currentTheme === DARK_THEME ? LIGHT_THEME : DARK_THEME;
+
+    applyTheme(newTheme);
+    updateThemeIcon(newTheme);
+    await setThemePreference(newTheme);
+    console.log("Theme toggled to:", newTheme);
+  });
+  console.log("Theme toggle listener initialized.");
+}
 
 /**
  * Populates the custom platform dropdown with options.
