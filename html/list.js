@@ -251,7 +251,11 @@ function applyFiltersAndRender() {
   });
 
   // -- Pagination Logic ---
-  totalPages = Math.max(1, Math.ceil(filteredProblems.length / ITEMS_PER_PAGE));
+  const totalFilteredProblemsCount = filteredProblems.length;
+  totalPages = Math.max(
+    1,
+    Math.ceil(totalFilteredProblemsCount / ITEMS_PER_PAGE)
+  );
   // Ensure currentPage is within valid bounds
   if (currentPage > totalPages) {
     currentPage = totalPages;
@@ -264,34 +268,33 @@ function applyFiltersAndRender() {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedProblems = filteredProblems.slice(startIndex, endIndex);
 
-  renderProblemList(paginatedProblems, filteredProblems.length);
+  renderProblemList(paginatedProblems, totalFilteredProblemsCount);
   updatePaginationControls();
 }
 
-function renderProblemList(problemsToRender, totalFilteredCount) {
+function renderProblemList(
+  problemsToRender,
+  totalFilteredItemsMatchingFilters
+) {
   if (!problemGridContainer) return;
   problemGridContainer.innerHTML = "";
-  console.log(`Rendering ${problemsToRender.length} problems as cards.`);
+
   if (totalProblemsCountEl) {
-    const filtersActive =
-      currentFilters.status !== "all" ||
-      currentFilters.platform !== "all" ||
-      currentFilters.search !== "";
-    if (filtersActive && problemsData.length !== problemsToRender.length) {
-      totalProblemsCountEl.textContent = `Showing ${problemsToRender.length} of ${problemsData.length} Problems`;
-    } else {
-      totalProblemsCountEl.textContent = `Total Problems: ${problemsData.length}`;
-    }
+    totalProblemsCountEl.textContent = `Showing ${problemsToRender.length} of ${totalFilteredItemsMatchingFilters} Problems`;
   }
-  if (problemsToRender.length === 0) {
+
+  if (
+    problemsToRender.length === 0 &&
+    totalFilteredItemsMatchingFilters === 0
+  ) {
+    // Check totalFilteredItemsMatchingFilters as well
     const message =
-      problemsData.length > 0
-        ? "No problems match the current filters. 😕"
+      problemsData.length > 0 // Still have problems, but none match filter
+        ? "No problems match the current filters/search. 😕"
         : "You haven't tracked any problems yet! Add some. ✨";
     renderMessage(message);
   } else {
     // problemsToRender are already sorted if problemsData was sorted, and then paginated
-    // No need to sort here again unless you want per-page sorting different from global
     problemsToRender.forEach((problem) => {
       const card = createProblemCard(problem);
       problemGridContainer.appendChild(card);
