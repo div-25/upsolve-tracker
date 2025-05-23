@@ -38,5 +38,8 @@
       "resources": ["html/list.html", "html/list.js", "html/list.css"],
       "matches": []
     }
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' https://fonts.googleapis.com;"
+  }
 }

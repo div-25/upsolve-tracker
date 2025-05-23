@@ -121,12 +121,16 @@ function applyTheme(theme) {
  * @param {string} theme - 'light' or 'dark'
  */
 function updateThemeIcon(theme) {
+  if (!themeIconMoon || !themeIconSun) {
+    console.warn("Theme icon elements not found in updateThemeIcon.");
+    return;
+  }
   if (theme === DARK_THEME) {
-    themeIconMoon.style.display = "none";
-    themeIconSun.style.display = "inline-block"; // Or 'block' if it's not inline with text
+    themeIconMoon.classList.add("hidden-icon");
+    themeIconSun.classList.remove("hidden-icon");
   } else {
-    themeIconMoon.style.display = "inline-block";
-    themeIconSun.style.display = "none";
+    themeIconSun.classList.add("hidden-icon");
+    themeIconMoon.classList.remove("hidden-icon");
   }
 }
 

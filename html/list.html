@@ -4,13 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Upsolve Tracker</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- Preconnect to Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      href="https://fonts.googleapis.com/css2?display=swap&family=Inter:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900"
       rel="stylesheet"
-      as="style"
-      onload="this.rel='stylesheet'"
-      href="https://fonts.googleapis.com/css2?display=swap&family=Inter%3Awght%40400%3B500%3B700%3B900&family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
     />
+    >
     <link rel="stylesheet" href="/css/list.css" />
   </head>
   <body>
@@ -41,6 +42,7 @@
           <!-- Moon Icon (Default for light theme) -->
           <svg
             id="theme-icon-moon"
+            class="hidden-icon"
             xmlns="http://www.w3.org/2000/svg"
             width="20px"
             height="20px"
@@ -55,7 +57,7 @@
           <!-- Sun Icon (Initially hidden) -->
           <svg
             id="theme-icon-sun"
-            style="display: none"
+            class="hidden-icon"
             xmlns="http://www.w3.org/2000/svg"
             width="20px"
             height="20px"
@@ -107,7 +109,6 @@
 
             <!-- Platform Dropdown -->
             <div class="platform-filter-wrapper">
-              <!-- This wrapper helps with positioning -->
               <button
                 id="platform-filter-button"
                 class="platform-filter-button"
@@ -127,28 +128,18 @@
                 </svg>
               </button>
 
-              <!-- NEW: Custom Dropdown Options Container -->
+              <!-- Custom Dropdown Options Container -->
               <div
                 id="platform-custom-dropdown"
                 class="custom-dropdown-options"
               >
                 <!-- Options will be populated here by JavaScript -->
-                <!-- Example of what JS will create:
-                              <div class="custom-option" data-value="all">All Platforms</div>
-                              <div class="custom-option" data-value="CF">Codeforces</div>
-                              <div class="custom-option" data-value="LC">LeetCode</div>
-                              -->
               </div>
 
-              <!-- Keep the original select, but ensure it's TRULY hidden and not interactive -->
+              <!-- Original select, TRULY hidden and NOT used for UI interaction -->
               <select
                 id="platform-filter-select"
-                style="
-                  display: none !important;
-                  visibility: hidden;
-                  position: absolute;
-                  left: -9999px;
-                "
+                class="visually-hidden-select"
               >
                 <option value="all">All Platforms</option>
                 <option value="CF">Codeforces</option>

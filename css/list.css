@@ -126,7 +126,9 @@ body {
   height: 20px;
   fill: currentColor;
 }
-
+.hidden-icon {
+  display: none !important; /* Use !important to ensure it overrides other display styles if necessary */
+}
 /* DARK THEME OVERRIDES - Blueish Version */
 body.dark-theme {
   --body-bg: #1a1a2e; /* Dark blue/purple main background */
@@ -427,6 +429,21 @@ body.dark-theme .problem-card .card-title {
 .custom-option.selected {
   background-color: var(--surface-bg-active);
   font-weight: 500;
+}
+.visually-hidden-select {
+  display: none !important; /* Strongest way to hide */
+  /* Or, more accessibly if it ever needed to be focusable by keyboard but not seen:
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px); // Deprecated
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  margin: -1px;
+  padding: 0;
+  */
 }
 
 /* Summary Section (Total Problems) */
