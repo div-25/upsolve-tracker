@@ -1,4 +1,55 @@
 /* css/list.css */
+
+/* Define LIGHT THEME color variables */
+:root {
+  --font-family: "Inter", "Noto Sans", sans-serif;
+
+  /* Base Colors */
+  --body-bg: #ffffff;
+  --text-color: #121417;
+  --text-muted: #677583; /* For placeholders, secondary text */
+
+  /* Surface Colors (for containers, cards, inputs) */
+  --surface-bg: #f1f2f4; /* Search bar, pills, buttons */
+  --surface-bg-hover: #e2e4e7; /* Hover for pills/buttons */
+  --surface-bg-active: #d1d3d6; /* Active pill */
+  --card-bg: #ffffff;
+
+  /* Border Colors */
+  --border-light: #f1f2f4; /* Header bottom border */
+  --border-medium: #e2e4e7; /* Button borders, card borders */
+  --border-dark: #d1d3d6; /* Stronger border / focus */
+  --border-dropdown-button-active: #adb5bd; /* For platform button when dropdown open */
+
+  /* Accent/Primary Colors (currently subtle in the light theme) */
+  /* We can introduce a stronger primary later if desired, e.g., for links or active states */
+  --primary-accent: #007bff; /* Example blue - not heavily used in current light theme */
+  --text-link: #007bff; /* Default link blue - can be themed */
+
+  /* Status Colors */
+  --status-solved-text: #38a169; /* Green */
+  --status-unsolved-text: #e53e3e; /* Red */
+
+  /* Specific Component Colors */
+  --placeholder-image-bg: #e2e8f0;
+  --platform-cf-bg: #2c5282;
+  --platform-cf-text: white;
+  --platform-lc-bg: #f59e0b;
+  --platform-lc-text: #4a4a4a;
+  --tag-bg: #e2e4e7;
+  --tag-text: #4a5568;
+
+  /* Shadows */
+  --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-card-hover: 0 8px 16px rgba(0, 0, 0, 0.1);
+
+  /* Radii - these are not colors but good to have as vars */
+  --radius-sm: 6px;
+  --radius-md: 0.75rem; /* 12px */
+  --radius-lg: 0.5rem; /* Dropdown rounding */
+  --radius-full: 9999px;
+}
+
 /* Basic Reset & Font Setup */
 * {
   margin: 0;
@@ -7,18 +58,18 @@
 }
 
 body {
-  font-family: "Inter", "Noto Sans", sans-serif;
-  background-color: #ffffff; /* White background from image */
-  color: #121417; /* Default text color from image */
+  font-family: var(--font-family);
+  background-color: var(--body-bg);
+  color: var(--text-color);
   min-height: 100vh;
-  display: flex; /* To allow .upsolve-app-container to grow */
+  display: flex;
   flex-direction: column;
 }
 
 .upsolve-app-container {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Make it take full height */
+  flex-grow: 1;
   width: 100%;
 }
 
@@ -27,121 +78,243 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 40px; /* py-3 px-10 */
-  border-bottom: 1px solid #f1f2f4; /* border-b-[#f1f2f4] */
+  padding: 12px 40px;
+  border-bottom: 1px solid var(--border-light);
   white-space: nowrap;
 }
 
 .logo-title {
   display: flex;
   align-items: center;
-  gap: 16px; /* gap-4 */
-  color: #121417;
+  gap: 16px;
+  color: var(--text-color); /* Will inherit from body but explicit is fine */
 }
 
 .logo-icon svg {
-  width: 16px; /* size-4 */
-  height: 16px; /* size-4 */
-  fill: currentColor; /* Uses parent color */
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
 }
 
 .logo-title h2 {
-  font-size: 1.125rem; /* text-lg */
-  font-weight: 700; /* font-bold */
-  line-height: 1.25; /* leading-tight (approx) */
-  letter-spacing: -0.015em; /* tracking-[-0.015em] */
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
 }
 
-.help-button {
+/* THEME TOGGLE BUTTON (replaces .help-button) */
+.theme-toggle-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 40px; /* h-10 */
-  min-width: 40px; /* To make it round with only icon */
-  padding: 0 10px; /* px-2.5 */
-  background-color: #f1f2f4;
+  height: 40px;
+  min-width: 40px;
+  padding: 0 10px;
+  background-color: var(--surface-bg);
   border: none;
-  border-radius: 9999px; /* rounded-full */
+  border-radius: var(--radius-full);
   cursor: pointer;
-  color: #121417;
+  color: var(--text-color);
+  transition: background-color 0.2s ease;
 }
-
-.help-button svg {
+.theme-toggle-button:hover {
+  background-color: var(--surface-bg-hover);
+}
+.theme-toggle-button svg {
   width: 20px;
   height: 20px;
   fill: currentColor;
 }
 
+/* DARK THEME OVERRIDES - Blueish Version */
+body.dark-theme {
+  --body-bg: #1a1a2e; /* Dark blue/purple main background */
+  --text-color: #e0e0e0; /* Light grey for primary text */
+  --text-muted: #a0a0a0; /* Dimmer text for secondary info */
+
+  --surface-bg: #1f1f3a; /* Slightly lighter dark blue/purple for cards, inputs */
+  --surface-bg-hover: #2a2a4a; /* Hover state for surfaces */
+  --surface-bg-active: #35355a; /* Active state for surfaces (e.g., active pill) */
+  --card-bg: var(--surface-bg); /* Cards use the surface background */
+
+  --border-light: #2a2a4a; /* Subtle borders */
+  --border-medium: #40405f; /* Default borders for components */
+  --border-dark: #50506f; /* Stronger borders / focus indication */
+  --border-dropdown-button-active: var(--border-dark);
+
+  /* Accent/Primary Colors for Dark Theme */
+  --primary-accent: #00aaff; /* Bright blue from your preference */
+  --text-link: var(--primary-accent); /* Links use the primary accent */
+
+  /* Status Colors (ensure good contrast) */
+  --status-solved-text: #4caf50; /* Green (can be brightened if needed: #66bb6a) */
+  --status-unsolved-text: #e94560; /* Pink/Red (can be brightened if needed: #ef5350) */
+
+  /* Specific Component Colors */
+  --placeholder-image-bg: #2a2a4a; /* Darker placeholder for images */
+  /* Platform CF/LC colors - using accent for CF, and a contrasting color for LC */
+  --platform-cf-bg: var(--primary-accent);
+  --platform-cf-text: #121212; /* Dark text on bright blue for contrast */
+  --platform-lc-bg: #f59e0b; /* LeetCode orange/yellow */
+  --platform-lc-text: #1f1f3a; /* Dark surface color text on orange */
+
+  --tag-bg: #2a2a4a; /* Darker tags */
+  --tag-text: #b0b0b0; /* Lighter tag text */
+
+  /* Shadows (might need to be lighter or use highlights in dark mode) */
+  --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.3); /* Darker shadow for depth */
+  --shadow-card-hover: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Additional Dark Theme Specific Adjustments */
+body.dark-theme .problem-card {
+  border-color: var(--border-dark);
+}
+
+body.dark-theme .platform-filter-button,
+body.dark-theme .theme-toggle-button,
+body.dark-theme .filter-pill,
+body.dark-theme .pagination-button {
+  background-color: var(--surface-bg);
+  color: var(--text-color);
+  border-color: var(--border-medium);
+}
+
+body.dark-theme .platform-filter-button:hover,
+body.dark-theme .theme-toggle-button:hover,
+body.dark-theme .filter-pill:hover,
+body.dark-theme .pagination-button:hover:not([disabled]) {
+  background-color: var(--surface-bg-hover);
+  border-color: var(--border-dark);
+}
+
+body.dark-theme .filter-pill.active {
+  background-color: var(--primary-accent);
+  color: var(--body-bg); /* Contrast text (dark) on bright blue */
+  border-color: var(--primary-accent);
+}
+
+body.dark-theme .pagination-button:disabled {
+  background-color: var(--surface-bg);
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* Ensure SVG icons adapt */
+body.dark-theme .platform-filter-button svg,
+body.dark-theme .theme-toggle-button svg,
+body.dark-theme .search-icon-wrapper svg,
+body.dark-theme .logo-icon svg {
+  fill: var(--text-color);
+}
+
+/* Custom dropdown options in dark theme */
+body.dark-theme .custom-dropdown-options {
+  background-color: var(--surface-bg);
+  border-color: var(--border-dark);
+}
+body.dark-theme .custom-option:hover {
+  background-color: var(--surface-bg-hover);
+}
+body.dark-theme .custom-option.selected {
+  background-color: var(--primary-accent);
+  color: var(--body-bg); /* Contrast text (dark) on bright blue */
+}
+
+/* Search bar in dark theme */
+body.dark-theme .search-bar-wrapper {
+  background-color: var(--surface-bg);
+}
+body.dark-theme .search-input-field {
+  color: var(--text-color);
+}
+body.dark-theme .search-input-field::placeholder {
+  color: var(--text-muted);
+}
+body.dark-theme .search-icon-wrapper {
+  color: var(--text-muted);
+}
+
+/* Tags in dark theme */
+body.dark-theme .card-tags .tag {
+  background-color: var(--tag-bg);
+  color: var(--tag-text);
+}
+
+/* Links in cards */
+body.dark-theme .problem-card .card-title {
+  /* If title is a link */
+  color: var(--text-link);
+}
+
 /* Main Content Area Styling */
 .main-content {
-  flex-grow: 1; /* Takes remaining space */
+  flex-grow: 1;
   display: flex;
   justify-content: center;
-  padding-top: 20px; /* py-5 */
-  padding-bottom: 20px; /* py-5 */
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .content-wrapper {
   width: 100%;
-  max-width: 960px; /* max-w-[960px] */
+  max-width: 960px;
   display: flex;
   flex-direction: column;
-  flex: 1; /* Should this be flex-1? */
+  flex: 1;
 }
 
 .controls-section {
-  padding: 12px 16px; /* px-4 py-3 approx */
-  /* No need for color: #677583; anymore */
+  padding: 12px 16px;
 }
 
 /* Search Bar Styling */
 .search-bar-wrapper {
   display: flex;
-  align-items: stretch; /* Make icon wrapper and input same height */
-  height: 48px; /* h-12 */
+  align-items: stretch;
+  height: 48px;
   width: 100%;
-  background-color: #f1f2f4; /* bg-[#f1f2f4] */
-  border-radius: 0.75rem; /* rounded-xl */
-  margin-bottom: 12px; /* Space below search bar (gap-3 p-3 implies this) */
+  background-color: var(--surface-bg);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
 }
 
 .search-icon-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-left: 16px; /* pl-4 */
-  color: #677583; /* text-[#677583] */
+  padding-left: 16px;
+  color: var(--text-muted);
 }
-
 .search-icon-wrapper svg {
   width: 24px;
   height: 24px;
 }
 
 .search-input-field {
-  flex-grow: 1; /* Take remaining space */
-  min-width: 0; /* Important for flex items */
+  flex-grow: 1;
+  min-width: 0;
   border: none;
-  background-color: transparent; /* Inherit from wrapper */
-  padding: 0 16px 0 8px; /* px-4, pl-2 after icon */
-  font-size: 1rem; /* text-base */
-  color: #121417; /* text-[#121417] */
-  border-radius: 0 0.75rem 0.75rem 0; /* rounded-r-xl if icon wrapper isn't part of it */
+  background-color: transparent;
+  padding: 0 16px 0 8px;
+  font-size: 1rem;
+  color: var(--text-color);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 .search-input-field::placeholder {
-  color: #677583; /* placeholder:text-[#677583] */
-  font-weight: 400; /* font-normal */
+  color: var(--text-muted);
+  font-weight: 400;
 }
 .search-input-field:focus {
-  outline: none; /* focus:outline-0 */
-  /* Tailwind's focus:ring-0 and focus:border-none means no visual change on focus by default */
+  outline: none;
 }
 
 /* Filter Pills Styling */
 .filter-pills-wrapper {
   display: flex;
-  gap: 12px; /* gap-3 */
-  padding: 12px 0; /* p-3 approx, removed pr-4 because items will have their own padding */
+  gap: 12px;
+  padding: 12px 0;
   flex-wrap: wrap;
   margin-bottom: 12px;
 }
@@ -150,110 +323,184 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 32px; /* h-8 */
-  padding: 0 16px; /* pl-4 pr-4 */
-  background-color: #f1f2f4; /* bg-[#f1f2f4] */
-  border: 1px solid transparent; /* For potential active state border */
-  border-radius: 9999px; /* rounded-full */
-  font-size: 0.875rem; /* text-sm */
-  font-weight: 500; /* font-medium */
-  color: #121417; /* text-[#121417] */
+  height: 32px;
+  padding: 0 16px;
+  background-color: var(--surface-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-color);
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease,
     border-color 0.2s ease;
 }
-
 .filter-pill:hover {
-  background-color: #e2e4e7; /* Slightly darker on hover */
+  background-color: var(--surface-bg-hover);
+}
+.filter-pill.active {
+  background-color: var(--surface-bg-active);
 }
 
-.filter-pill.active {
-  /* To make it look like the active one in the image, it seems to be the same as inactive.
-     If we want a different active state: */
-  background-color: #d1d3d6; /* Example active state */
-  /* Or:
-  background-color: #007bff; // A primary color
-  color: white;
-  */
+/* Platform Filter Styling - For Custom Dropdown */
+.platform-filter-wrapper {
+  position: relative;
+  padding: 12px 0;
+  display: inline-block;
+}
+
+.platform-filter-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 180px;
+  text-align: left;
+  height: 32px;
+  padding: 0 12px;
+  background-color: var(--surface-bg);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.platform-filter-button:hover {
+  background-color: var(--surface-bg-hover);
+  border-color: var(--border-dark);
+}
+.platform-filter-button.dropdown-open {
+  border-color: var(--border-dropdown-button-active);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#selected-platform-text {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.platform-filter-button svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--text-color); /* Ensure SVG color matches text */
+  flex-shrink: 0;
+  transition: transform 0.2s ease-in-out;
+}
+.platform-filter-button.dropdown-open svg {
+  transform: rotate(180deg);
+}
+
+/* Custom Dropdown Options Styling */
+.custom-dropdown-options {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 180px;
+  background-color: var(--body-bg); /* Match body bg for dropdown */
+  border: 1px solid var(--border-dropdown-button-active);
+  border-top: none;
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+  box-shadow: var(--shadow-dropdown);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.custom-dropdown-options.open {
+  display: block;
+}
+.custom-option {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+.custom-option:hover {
+  background-color: var(--surface-bg-hover);
+}
+.custom-option.selected {
+  background-color: var(--surface-bg-active);
+  font-weight: 500;
 }
 
 /* Summary Section (Total Problems) */
 .summary-section {
-  padding: 4px 16px 12px 16px; /* pb-3 pt-1 px-4 */
+  padding: 4px 16px 12px 16px;
 }
 .summary-section p {
-  color: #677583; /* text-[#677583] */
-  font-size: 0.875rem; /* text-sm */
-  font-weight: 400; /* font-normal */
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 400;
 }
 
+/* Problem Grid Section */
 .problem-grid-section {
-  padding: 16px; /* p-4 from example */
+  padding: 16px;
 }
-
 .problem-grid {
   display: grid;
-  /* grid-cols-[repeat(auto-fit,minmax(158px,1fr))] */
   grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
   gap: 16px;
 }
-
 .grid-placeholder-message {
-  /* Style for loading/no problems message inside grid */
-  grid-column: 1 / -1; /* Make it span all columns */
+  grid-column: 1 / -1;
   text-align: center;
   padding: 40px 20px;
-  color: #888; /* Muted text */
+  color: var(--text-muted);
   font-style: italic;
+}
+/* For critical errors */
+.grid-placeholder-message.critical-error {
+  color: var(--status-unsolved-text); /* Red for critical error */
+  font-weight: bold;
 }
 
 /* Problem Card Styling */
 .problem-card {
   display: flex;
   flex-direction: column;
-  gap: 12px; /* gap-3 from example for spacing between image and text */
-  /* pb-3 is effectively margin-bottom if cards are stacked, handled by grid gap here */
-  border: 1px solid #f0f0f0; /* Subtle border for cards */
-  border-radius: 0.75rem; /* rounded-xl */
-  background-color: #fff; /* Card background */
-  overflow: hidden; /* To ensure image corners are clipped if image is direct child */
+  gap: 12px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  background-color: var(--card-bg);
+  overflow: hidden;
   transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-  cursor: pointer; /* Make card feel clickable to go to problem */
+  cursor: pointer;
   width: 100%;
   max-width: 260px;
 }
-
 .problem-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .card-image-placeholder {
   width: 100%;
-  aspect-ratio: 1 / 1; /* aspect-square */
-  background-color: #e2e8f0; /* Default placeholder color (light gray) */
+  aspect-ratio: 1 / 1;
+  background-color: var(--placeholder-image-bg);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  /* The example uses background-image. We'll use classes for platform colors. */
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  color: #4a5568; /* Text color for placeholder */
   font-size: 1.5rem;
 }
-
-/* Platform-specific placeholder styles */
 .platform-cf {
-  background-color: #2c5282; /* Example Codeforces blue */
-  color: white;
+  background-color: var(--platform-cf-bg);
+  color: var(--platform-cf-text);
 }
 .platform-lc {
-  background-color: #f59e0b; /* Example LeetCode orange/yellow */
-  color: #4a4a4a;
+  background-color: var(--platform-lc-bg);
+  color: var(--platform-lc-text);
 }
-/* We can add actual SVG logos here later */
 .platform-cf::after {
   content: "CF";
 }
@@ -262,195 +509,91 @@ body {
 }
 
 .card-info {
-  padding: 0px 12px 12px 12px; /* Padding for text content, adjust as needed */
+  padding: 0px 12px 12px 12px;
   display: flex;
   flex-direction: column;
-  gap: 6px; /* Spacing between text elements */
+  gap: 6px;
 }
-
 .card-title {
-  color: #121417; /* text-[#121417] */
-  font-size: 1rem; /* text-base */
-  font-weight: 500; /* font-medium */
-  line-height: 1.4; /* leading-normal (approx) */
-  /* Basic truncation for long titles */
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .card-date {
-  color: #677583; /* text-[#677583] */
-  font-size: 0.875rem; /* text-sm */
-  font-weight: 400; /* font-normal */
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 400;
 }
-
 .card-tags {
-  margin-top: 4px; /* Add a bit of space before tags */
+  margin-top: 4px;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px; /* Space between tags */
+  gap: 6px;
 }
-
 .card-tags .tag {
-  background-color: #e2e4e7; /* Light gray for tags */
-  color: #4a5568; /* Darker gray text */
-  font-size: 0.75rem; /* Smaller tags */
+  background-color: var(--tag-bg);
+  color: var(--tag-text);
+  font-size: 0.75rem;
   padding: 2px 8px;
-  border-radius: 9999px; /* Fully rounded */
+  border-radius: var(--radius-full);
   font-weight: 500;
 }
-
 .card-status {
-  margin-top: auto; /* Push status to the bottom if card height varies */
+  margin-top: auto;
   font-size: 0.875rem;
   font-weight: 500;
   padding-top: 6px;
 }
 .card-status.status-solved {
-  color: #38a169; /* Green for solved */
+  color: var(--status-solved-text);
 }
 .card-status.status-unsolved {
-  color: #e53e3e; /* Red for pending/unsolved */
+  color: var(--status-unsolved-text);
 }
 
 /* Pagination Section */
 .pagination-section {
   padding: 20px 16px;
-  color: #677583;
+  color: var(--text-muted); /* Use text-muted for consistency */
   display: flex;
   justify-content: center;
-  align-items: center; /* This should vertically align items */
-  /* gap: 12px; Remove direct gap, apply margins instead for more control */
+  align-items: center;
   margin-top: 20px;
-  border-top: 1px solid #f1f2f4;
+  border-top: 1px solid var(--border-light);
 }
-
 .pagination-button {
   padding: 8px 16px;
-  background-color: #f1f2f4;
-  border: 1px solid #e2e4e7;
-  border-radius: 6px;
-  color: #121417;
+  background-color: var(--surface-bg);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-color);
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease;
-  margin: 0 8px; /* Add margin around buttons for spacing */
+  margin: 0 8px;
 }
-
 .pagination-button:hover:not([disabled]) {
-  background-color: #e9edf0;
-  border-color: #d1d5db;
+  background-color: var(--surface-bg-hover);
+  border-color: var(--border-dark);
 }
-
 .pagination-button:disabled {
-  background-color: #f8f9fa;
-  color: #adb5bd;
+  background-color: var(
+    --surface-bg
+  ); /* Keep same bg, just change opacity/color */
+  color: var(--text-muted);
   cursor: not-allowed;
-  border-color: #e9ecef;
+  opacity: 0.6; /* Make it look disabled */
+  /* border-color: var(--border-light); */
 }
-
 .page-info-display {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #343a40;
-  padding: 0 8px; /* Add some padding so it doesn't stick to potential margins */
-  white-space: nowrap; /* Prevent "Page X of Y" from wrapping */
-}
-
-/* Platform Filter Styling - For Custom Dropdown */
-.platform-filter-wrapper {
-  position: relative;
-  padding: 12px 0;
-  display: inline-block; /* Add this to make the wrapper only as wide as its content (the button) */
-}
-
-.platform-filter-button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Distribute text and caret */
-  width: 180px; /* Button width - dropdown will match this */
-  text-align: left;
-  height: 32px;
-  padding: 0 12px; /* Adjusted padding for text then caret */
-  background-color: #f1f2f4;
-  border: 1px solid #e2e4e7; /* Consistent border */
-  border-radius: 9999px; /* rounded-full */
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #121417;
-  cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.platform-filter-button:hover {
-  background-color: #e9edf0; /* Slightly different hover */
-  border-color: #d1d5db;
-}
-
-.platform-filter-button.dropdown-open {
-  /* Style for when the custom dropdown is open */
-  border-color: #adb5bd; /* Example: a slightly darker border */
-  border-bottom-left-radius: 0; /* Flatten bottom corners when open */
-  border-bottom-right-radius: 0; /* Flatten bottom corners when open */
-}
-
-#selected-platform-text {
-  flex-grow: 1;
+  color: var(--text-color); /* Slightly stronger than muted */
+  padding: 0 8px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.platform-filter-button svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0; /* Prevent caret from shrinking */
-  transition: transform 0.2s ease-in-out; /* For rotating caret */
-}
-
-.platform-filter-button.dropdown-open svg {
-  transform: rotate(180deg); /* Rotate caret when dropdown is open */
-}
-
-/* Custom Dropdown Options Styling */
-.custom-dropdown-options {
-  display: none; /* Hidden by default */
-  position: absolute;
-  top: 100%; /* Make it touch the button (or almost) */
-  left: 0;
-  width: 180px; /* Match button width */
-  background-color: #ffffff;
-  border: 1px solid #adb5bd; /* Match the .dropdown-open border color of the button */
-  border-top: none; /* Remove top border to merge with button */
-  border-bottom-left-radius: 0.5rem; /* Keep bottom rounding */
-  border-bottom-right-radius: 0.5rem; /* Keep bottom rounding */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Standard dropdown shadow */
-  z-index: 1000; /* Ensure it's on top */
-  max-height: 200px; /* Add scroll if many options */
-  overflow-y: auto;
-  padding: 4px 0; /* Small padding around the options list */
-}
-
-.custom-dropdown-options.open {
-  display: block; /* Show when .open class is added by JS */
-}
-
-.custom-option {
-  padding: 8px 16px; /* Adjust padding for option items */
-  font-size: 0.875rem;
-  color: #121417;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  white-space: nowrap; /* Prevent options from wrapping */
-}
-
-.custom-option:hover {
-  background-color: #f1f2f4; /* Light hover for options */
-}
-
-.custom-option.selected {
-  background-color: #e2e4e7; /* Slightly darker for a selected item (optional visual cue) */
-  font-weight: 500; /* Make selected item bold */
 }
