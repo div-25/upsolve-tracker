@@ -15,7 +15,7 @@ const selectedPlatformText = document.getElementById("selected-platform-text"); 
 const platformCustomDropdown = document.getElementById(
   "platform-custom-dropdown"
 ); // The div for options
-// const searchInput = document.getElementById("search-input"); // For search later
+const searchInput = document.getElementById("search-input"); // For search later
 
 // --- Global Data Store ---
 let problemsData = []; // Holds the raw data fetched from storage (all problems)
@@ -43,7 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
     filterStatusPills.length === 0 ||
     !platformFilterButton ||
     !platformFilterButton ||
-    !platformCustomDropdown
+    !platformCustomDropdown ||
+    !searchInput
   ) {
     console.error(
       "One or more essential DOM elements for filtering/display are not found! Check IDs."
@@ -110,6 +111,7 @@ function applyFiltersAndRender() {
   console.log(
     `Applying filters: Status='${currentFilters.status}', Platform='${currentFilters.platform}'`
   );
+  const searchTerm = currentFilters.search;
   const filteredProblems = problemsData.filter((problem) => {
     const statusMatch =
       currentFilters.status === "all" ||
@@ -117,7 +119,14 @@ function applyFiltersAndRender() {
     const platformMatch =
       currentFilters.platform === "all" ||
       problem.platform === currentFilters.platform;
-    return statusMatch && platformMatch;
+    let searchMatch = true;
+    if (searchTerm) {
+      const problemTitle = (problem.title || "").toLowerCase();
+      const problemTags = (problem.tags || []).join(" ").toLowerCase();
+      searchMatch =
+        problemTitle.includes(searchTerm) || problemTags.includes(searchTerm);
+    }
+    return statusMatch && platformMatch && searchMatch;
   });
   renderProblemList(filteredProblems);
 }
@@ -277,8 +286,11 @@ function initializeFilters() {
     }
   });
 
-  // We no longer need listeners for platformFilterSelect.blur or platformFilterSelect.change
-  // as we are not using the native select for interaction.
+  // Search Input Listener
+  searchInput.addEventListener("input", (event) => {
+    currentFilters.search = event.target.value.toLowerCase();
+    applyFiltersAndRender();
+  });
 
   console.log("Filter event listeners initialized.");
 }
