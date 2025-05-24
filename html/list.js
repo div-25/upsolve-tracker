@@ -463,6 +463,14 @@ async function loadAndDisplayProblems() {
     const problemsMap = data[STORAGE_KEY_PROBLEMS] || {};
     problemsData = Object.values(problemsMap);
     console.log(`Found ${problemsData.length} raw problems in storage.`);
+
+    // Sort problemsData by dateAdded in descending order
+    problemsData.sort((a, b) => {
+      const dateA = new Date(a.dateAdded || 0);
+      const dateB = new Date(b.dateAdded || 0);
+      return dateB - dateA; // Sort descending
+    });
+
     applyFiltersAndRender();
   } catch (error) {
     console.error("Error loading problems from storage:", error);
